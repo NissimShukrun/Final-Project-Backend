@@ -16,7 +16,7 @@ const jwtExpiration = "1h";
 
 router.post("/register", async (req, res) => {
   try {
-    let { name, email, password } = req.body;
+    let { name, email, password, isAdmin } = req.body;
     const existingUser = await User.find({ email });
     if (existingUser.length > 0) {
       return res.status(403).send({ error: "email already exist" });
@@ -29,6 +29,7 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password,
+      isAdmin: "user",
     });
 
     const returnUser = {
@@ -65,6 +66,7 @@ router.post("/login", async (req, res) => {
     const payload = {
       _id: user._id,
       email: user.email,
+      isAdmin: user.isAdmin,
     };
 
     jwt.sign(payload, jwtSecret, { expiresIn: jwtExpiration }, (err, token) => {

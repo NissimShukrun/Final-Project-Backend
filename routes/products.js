@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Product from "../models/Product.js";
-import User from "../models/User.js";
+import { verifyAuth, checkRole } from "../middlewares/verify.js";
 
 const router = Router();
 
@@ -28,7 +28,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", verifyAuth, checkRole(["admin"]), async (req, res) => {
   try {
     const { name, price, description } = req.body;
     const newProduct = await Product.create({
@@ -37,6 +37,36 @@ router.post("/", async (req, res) => {
       description,
     });
     res.status(201).send(newProduct);
+  } catch (err) {
+    return res.status(500).send({ error: "server error" });
+  }
+});
+
+router.put("/:id", verifyAuth, checkRole(["admin"]), async (req, res) => {
+  try {
+    const { name, price, description } = req.body;
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      { name, price, description },
+      { new: true }
+    );
+    if (!product) {
+      return res.status(400).send({ error: "product not found" });
+    }
+    res.status(200).send(product);
+  } catch (err) {
+    return res.status(500).send({ error: "server error" });
+  }
+});
+
+router.delete("/:id", verifyAuth, checkRole(["admin"]), async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res.status(400).send({ error: "product not found" });
+    }
+
+    res.status(204).send();
   } catch (err) {
     return res.status(500).send({ error: "server error" });
   }

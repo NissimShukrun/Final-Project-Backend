@@ -4,7 +4,7 @@ dotenv.config();
 
 export const verifyAuth = (req, res, next) => {
   const authHeader = req.header("Authorization");
-
+  console.log("AUTH HEADER:", authHeader);
   if (!authHeader) {
     return res
       .status(401)
