@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authentication from "./routes/authentication.js";
 import products from "./routes/products.js";
+import orders from "./routes/orders.js";
 
 const app = express();
 dotenv.config();
@@ -20,6 +21,7 @@ mongoose
 
 app.use("/auth", authentication);
 app.use("/products", products);
+app.use("/orders", orders);
 
 app.listen(5000, () => {
   console.log(`Server is running on http://localhost:5000`);
