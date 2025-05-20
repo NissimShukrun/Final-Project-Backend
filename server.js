@@ -4,11 +4,14 @@ import dotenv from "dotenv";
 import authentication from "./routes/authentication.js";
 import products from "./routes/products.js";
 import orders from "./routes/orders.js";
+import cors from "cors";
 
 const app = express();
 dotenv.config();
 
 app.use(express.json());
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 mongoose
   .connect(process.env.MONGO_URL)
