@@ -65,6 +65,7 @@ router.post("/login", async (req, res) => {
 
     const payload = {
       _id: user._id,
+      name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
     };
@@ -102,7 +103,9 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", (req, res) => {
+////
+
+router.post("/logout", async (req, res) => {
   const serialized = serialize("token", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -115,13 +118,20 @@ router.post("/logout", (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 });
 
-router.get("/me", (req, res) => {
+////
+
+router.get("/me", async (req, res) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).send({ error: "Not authenticated" });
 
   try {
     const decoded = jwt.verify(token, jwtSecret);
-    res.status(200).send({ user: decoded });
+    res.status(200).send({
+      _id: decoded._id,
+      email: decoded.email,
+      name: decoded.name,
+      isAdmin: decoded.isAdmin,
+    });
   } catch (err) {
     return res.status(403).send({ error: "Invalid token" });
   }
