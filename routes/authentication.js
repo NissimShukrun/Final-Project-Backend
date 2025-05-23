@@ -102,4 +102,29 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.post("/logout", (req, res) => {
+  const serialized = serialize("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    expires: new Date(0),
+    path: "/",
+  });
+
+  res.setHeader("Set-Cookie", serialized);
+  return res.status(200).json({ message: "Logged out successfully" });
+});
+
+router.get("/me", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).send({ error: "Not authenticated" });
+
+  try {
+    const decoded = jwt.verify(token, jwtSecret);
+    res.status(200).send({ user: decoded });
+  } catch (err) {
+    return res.status(403).send({ error: "Invalid token" });
+  }
+});
+
 export default router;
