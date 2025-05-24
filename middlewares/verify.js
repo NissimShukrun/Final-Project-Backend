@@ -3,21 +3,20 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const verifyAuth = (req, res, next) => {
-  const authHeader = req.header("Authorization");
-  console.log("AUTH HEADER:", authHeader);
-  if (!authHeader) {
-    return res
-      .status(401)
-      .send({ succes: false, message: "No token provided" });
-  }
+  const token = req.cookies.token;
 
-  const token = authHeader.replace("Bearer ", "");
+  if (!token) {
+    return res.status(401).send({
+      succes: false,
+      message: "No token provided, authorization denied",
+    });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = {
       id: decoded.id || decoded._id,
-      isAdmin: decoded.isAdmin || false,
+      isAdmin: decoded.isAdmin,
     };
     next();
   } catch (error) {
