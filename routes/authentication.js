@@ -16,10 +16,10 @@ const jwtExpiration = "1h";
 
 router.post("/register", async (req, res) => {
   try {
-    let { name, email, password, isAdmin } = req.body;
-    const existingUser = await User.find({ email });
-    if (existingUser.length > 0) {
-      return res.status(403).send({ error: "email already exist" });
+    let { name, email, password } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(403).send({ error: "Email already exists" });
     }
 
     const saltRounds = await bcrypt.genSalt(10);
