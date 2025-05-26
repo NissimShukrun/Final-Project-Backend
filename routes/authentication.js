@@ -89,10 +89,16 @@ router.post("/login", async (req, res) => {
         name: user.name,
         email: user.email,
         _id: user._id,
+        isAdmin: user.isAdmin,
       };
 
+      const message =
+        user.isAdmin === "admin"
+          ? "Admin logged in successfully"
+          : "User logged in succesfully";
+
       res.status(200).send({
-        message: "User logged in succesfully",
+        message,
         user: returnUser,
         token: token,
       });
