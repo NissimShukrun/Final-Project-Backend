@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find({ isActive: true });
     if (!products) {
       return res.status(400).send({ error: "products not found" });
     }
@@ -61,12 +61,16 @@ router.put("/:id", verifyAuth, checkRole(["admin"]), async (req, res) => {
 
 router.delete("/:id", verifyAuth, checkRole(["admin"]), async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findByIdAndDelete(
+      req.params.id,
+      { isActive: false },
+      { new: true }
+    );
     if (!product) {
       return res.status(400).send({ error: "product not found" });
     }
 
-    res.status(204).send();
+    res.status(200).send({ id: req.params.id });
   } catch (err) {
     return res.status(500).send({ error: "server error" });
   }
