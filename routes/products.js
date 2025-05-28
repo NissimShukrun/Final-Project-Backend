@@ -61,7 +61,7 @@ router.put("/:id", verifyAuth, checkRole(["admin"]), async (req, res) => {
 
 router.delete("/:id", verifyAuth, checkRole(["admin"]), async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(
+    const product = await Product.findByIdAndUpdate(
       req.params.id,
       { isActive: false },
       { new: true }
